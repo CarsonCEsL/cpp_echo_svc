@@ -972,7 +972,226 @@ string reverseWords(string s) {
     return string(result.begin(), result.end());
 }
 
+string reverseWord(string s) {
+    int m = s.size() - 1;
+    int n;
+    string result;
+    while (m >= 0 && s[m] == ' ') m--;
+    while (m >= 0) {
+        n = m;
+        while (m >= 0 && s[m] != ' ') m--;
+        result += s.substr(m + 1, n - m) + " ";
+        while (m >= 0 && s[m] == ' ') m--;
+    }
+
+    return result.substr(0, result.size() - 1); /* ignore the last space */
+}
+
+int lengthOfLongestSubstring(string s) {
+    int left = 0, right = 0, length = s.length();
+    int max_length = 0;
+    unordered_map<char, int> map1;
+    while (right < length) {
+        if (map1.find(s[right]) != map1.end()) {
+            left = map1[s[right]];
+        }
+        map1[s[right]] = right;
+        max_length = max(max_length, right - left + 1);
+        right++;
+    }
+
+    return max_length;
+}
+
+bool isValid(string s) {
+    if (s.length() % 2 != 0) {
+        return false;
+    }
+
+    stack<char> st;
+    for (int i = 0; i < s.length(); i++) {
+        if (s[i] == '(' || s[i] == '[' || s[i] == '{') {
+            st.push(s[i]);
+        } else if (s[i] == ')') {
+            if (st.empty() || st.top() != '(') {
+                return false;
+            }
+            st.pop();
+        } else if (s[i] == ']') {
+            if (st.empty() || st.top() != '[') {
+                return false;
+            }
+            st.pop();
+        } else if (s[i] == '}') {
+            if (st.empty() || st.top() != '{') {
+                return false;
+            }
+            st.pop();
+        }
+    }
+
+    return st.empty();
+}
+
+string removeDuplicates(string s) {
+    stack<char> st;
+    for (int i = 0; i < s.length(); i++) {
+        if (st.empty() || st.top() != s[i]) {
+            st.push(s[i]);
+        } else {
+            st.pop();
+        }
+    }
+
+    string result = "";
+    while (!st.empty()) {
+        result = st.top() + result;
+        st.pop();
+    }
+
+    return result;
+}
+
+int evalRPN(vector<string>& tokens) {
+    int tmp = 0;
+    int op1, op2;
+    stack<long long> st;
+    for (int i = 0; i < tokens.size(); i++) {
+        if (tokens[i] == "+") {
+            op1 = st.top();
+            st.pop();
+            op2 = st.top();
+            st.pop();
+            tmp = op1 + op2;
+            st.push(tmp);
+            cout << tmp << endl;
+        } else if (tokens[i] == "-") {
+            op1 = st.top();
+            st.pop();
+            op2 = st.top();
+            st.pop();
+            tmp = op2 - op1;
+            st.push(tmp);
+            cout << tmp << endl;
+        } else if (tokens[i] == "*") {
+            op1 = st.top();
+            st.pop();
+            op2 = st.top();
+            st.pop();
+            tmp = op1 * op2;
+            st.push(tmp);
+            cout << tmp << endl;
+        } else if (tokens[i] == "/") {
+            op1 = st.top();
+            st.pop();
+            op2 = st.top();
+            st.pop();
+            tmp = op2 / op1;
+            st.push(tmp);
+            cout << tmp << endl;
+        } else {
+            st.push(stoll(tokens[i]));
+            cout << "push " << stoll(tokens[i]) << endl;
+        }
+    }
+
+    return st.top();
+}
+
+class MyQueue {
+    public:
+    deque<int> que;
+
+    void pop(int value) {
+        if (!que.empty() && value == que.front()) {
+            que.pop_front();
+        }
+    }
+
+    void push(int value) {
+        while (!que.empty() && value > que.back()) {
+            que.pop_back();
+        }
+        que.push_back(value);
+    }
+
+    int front() {
+        return que.front();
+    }
+
+};
+
+vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+    vector<int> result;
+    MyQueue q;
+    for (int i = 0; i < k; i++) {
+        q.push(nums[i]);
+    }
+    result.push_back(q.front());
+    for (int i = k; i < nums.size(); i++) {
+        q.pop(nums[i - k]);
+        q.push(nums[i]);
+        result.push_back(q.front());
+    }
+
+    return result;
+}
+
+int findKthLargest(vector<int>& nums, int k) {
+    priority_queue<int> pq;
+    for (int i = 0; i < nums.size(); i++) {
+        pq.push(nums[i]);
+    }
+
+    for (int i = 1; i < k; i++) {
+        pq.pop();
+    }
+
+    return pq.top();
+}
+
+struct compare {
+    bool operator()(const pair<int, int>& a, const pair<int, int>& b) {
+        return a.second < b.second;
+    }
+};
+
+vector<int> topKFrequent(vector<int>& nums, int k) {
+    unordered_map<int, int> mp;
+    priority_queue<pair<int, int>> pq;
+    vector<int> result;
+    int last = 0;
+    for (int num : nums) {
+        mp[num]++;
+    }
+
+    for (auto it : mp) {
+        cout << it.first << " " << it.second << endl;
+    }
+
+    for (auto &it : mp) {
+        pq.push({it.second, it.first});
+    }
+
+    last = pq.top().second;
+    result.push_back(last);
+    pq.pop();
+    while (!pq.empty() && k > 1) {
+        if (pq.top().second != last) {
+            k--;
+        }
+        last = pq.top().second;
+        result.push_back(last);
+        pq.pop();
+    }
+
+    return result;
+}
+
 int main() {
-    cout << reverseWords("12");
-    cout << "aaaa" << endl;
+    vector<int> a = {1, 1, 1, 1, 2, 2, 3};
+    vector<int> result = topKFrequent(a, 2);
+    for (auto it : result) {
+        cout << it << endl;
+    }
 }
