@@ -1188,6 +1188,386 @@ vector<int> topKFrequent(vector<int>& nums, int k) {
     return result;
 }
 
+struct TreeNode {
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode() : val(0), left(nullptr), right(nullptr) {}
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+};
+
+void inorder(TreeNode* node, vector<int>& result) {
+    if (node == NULL) return;
+    inorder(node->left, result);
+    result.push_back(node->val);
+    inorder(node->right, result);
+}
+
+void preorder(TreeNode* node, vector<int>& result) {
+    if (node == NULL) return;
+    result.push_back(node->val);
+    preorder(node->left, result);
+    preorder(node->right, result);
+}
+
+void postorder(TreeNode* node, vector<int>& result) {
+    if (node == NULL) return;
+    postorder(node->left, result);
+    postorder(node->right, result);
+    result.push_back(node->val);
+}
+
+vector<int> postorderTraversal(TreeNode* root) {
+    vector<int> result;
+    postorder(root, result);
+
+    return result;
+}
+
+vector<int> preorderTraversal(TreeNode* root) {
+    stack<TreeNode*> st;
+    vector<int> result;
+    if (root == NULL) return result;
+    st.push(root);
+    while (!st.empty()) {
+        TreeNode* node = st.top();
+        st.pop();
+        result.push_back(node->val);
+        if (node->right != NULL) {st.push(node->right);}
+        if (node->left != NULL) {st.push(node->left);}
+    }
+
+    return result;
+}
+
+vector<int> inorderTraversal(TreeNode* root) {
+    vector<int> result;
+    stack<TreeNode*> st;
+    if (root == NULL) return result;
+    TreeNode *cur = root;
+    while (cur != NULL && !st.empty()) {
+        if (cur != NULL) {
+            st.push(cur);
+            cur = cur->left;
+        } else {
+            cur = st.top();
+            st.pop();
+            result.push_back(cur->val);
+            cur = cur->right;
+        }
+    }
+
+    return result;
+}
+
+vector<int> postOrderTraversal(TreeNode* root) {
+    vector<int> result;
+    stack<TreeNode*> st;
+    if (root == NULL) return result;
+    st.push(root);
+    while (!st.empty()) {
+        TreeNode* node = st.top();
+        st.pop();
+        result.push_back(node->val);
+        if (node->left != NULL) {st.push(node->left);}
+        if (node->right != NULL) {st.push(node->right);}
+    }
+
+    reverse(result.begin(), result.end());
+
+    return result;
+}
+
+vector<vector<int>> levelOrder(TreeNode* root) {
+    vector<vector<int>> result;
+    queue<TreeNode*> que;
+    if (root == NULL) return result;
+    que.push(root);
+    while (!que.empty()) {
+        int size = que.size();
+        vector<int> vec;
+        for (int i = 0; i < size; i++) {
+            TreeNode* node = que.front();
+            que.pop();
+            vec.push_back(node->val);
+            if (node->left != NULL) {que.push(node->left);}
+            if (node->right != NULL) {que.push(node->right);}
+        }
+        result.push_back(vec);
+    }
+
+    return result;
+}
+
+vector<int> rightSideView(TreeNode* root) {
+    // vector<vector<int>> tmp;
+    vector<int> result;
+    queue<TreeNode*> que;
+    if (root == NULL) {return result;}
+    que.push(root);
+    while (!que.empty()) {
+        int size = que.size();
+        // vector<int> vec;
+        for (int i = 0; i < size; i++) {
+            TreeNode* node = que.front();
+            que.pop();
+            if (i == size - 1) {
+                result.push_back(node->val);
+            }
+            if (node->left != NULL) {que.push(node->left);}
+            if (node->right != NULL) {que.push(node->right);}
+        }
+        // tmp.push_back(vec);
+    }
+
+    return result;
+}
+
+vector<double> averageOfLevels(TreeNode* root) {
+    vector<double> result;
+    queue<TreeNode*> que;
+    if (root == NULL) return result;
+    que.push(root);
+    while (!que.empty()) {
+        int size = que.size();
+        double tmp = 0;
+        for (int i = 0; i < size; i++) {
+            TreeNode* node = que.front();
+            que.pop();
+            tmp += node->val;
+            if (i == size - 1) {
+                result.push_back(tmp / size);
+            }
+            if (node->left != NULL) {que.push(node->left);}
+            if (node->right != NULL) {que.push(node->right);}
+        }
+    }
+
+    return result;
+}
+
+// class Node {
+// public:
+//     int val;
+//     vector<Node*> children;
+//
+//     Node() {}
+//
+//     Node(int _val) {
+//         val = _val;
+//     }
+//
+//     Node(int _val, vector<Node*> _children) {
+//         val = _val;
+//         children = _children;
+//     }
+// };
+
+class Node {
+public:
+    int val;
+    Node* left;
+    Node* right;
+    Node* next;
+
+    Node() : val(0), left(NULL), right(NULL), next(NULL) {}
+
+    Node(int _val) : val(_val), left(NULL), right(NULL), next(NULL) {}
+
+    Node(int _val, Node* _left, Node* _right, Node* _next)
+        : val(_val), left(_left), right(_right), next(_next) {}
+};
+
+
+vector<vector<int>> levelOrder2(Node* root) {
+    vector<vector<int>> result;
+    queue<Node*> que;
+    if (root == NULL) return result;
+    que.push(root);
+    while (!que.empty()) {
+        int size = que.size();
+        vector<int> vec;
+        for (int i = 0; i < size; i++) {
+            Node* node = que.front();
+            que.pop();
+            vec.push_back(node->val);
+            // for (auto it : node->children) {
+            //     que.push(it);
+            // }
+        }
+        result.push_back(vec);
+    }
+
+    return result;
+}
+
+vector<int> largestValues(TreeNode* root) {
+    vector<int> result;
+    queue<TreeNode*> que;
+    if (root == NULL) return result;
+    que.push(root);
+    while (!que.empty()) {
+        int size = que.size();
+        int max = INT_MIN;
+        for (int i = 0; i < size; i++) {
+            TreeNode* node = que.front();
+            que.pop();
+            max = max > node->val ? max : node->val;
+            if (node->left != NULL) {que.push(node->left);}
+            if (node->right != NULL) {que.push(node->right);}
+        }
+        result.push_back(max);
+    }
+
+    return result;
+}
+
+Node* connect(Node* root) {
+    queue<Node*> que;
+    if (root == NULL) return root;
+    que.push(root);
+    while (!que.empty()) {
+        int size = que.size();
+        for (int i = 0; i < size; i++) {
+            Node* node = que.front();
+            que.pop();
+            if (i == size - 1) {
+                node->next = NULL;
+            } else {
+                node->next = que.front();
+            }
+            if (node->left != NULL) {que.push(node->left);}
+            if (node->right != NULL) {que.push(node->right);}
+        }
+    }
+
+    return root;
+}
+
+void resetNull(Node* node) {
+    if (node == NULL || node->left == NULL) {
+        return;
+    }
+    node->left->next = node->right;
+    if (node->next != NULL) {
+        node->right->next = node->next->left;
+    }
+    resetNull(node->left);
+    resetNull(node->right);
+}
+
+int maxDepth(TreeNode* root) {
+    if (root == NULL) {
+        return 0;
+    }
+    int right = maxDepth(root->right);
+    int left = maxDepth(root->left);
+    return max(right, left) + 1;
+}
+
+int minDepth(TreeNode* root) {
+    queue<TreeNode*> que;
+    int depth = 0;
+    if (root == NULL) return 0;
+    que.push(root);
+    while (!que.empty()) {
+        int size = que.size();
+        depth++;
+        for (int i = 0; i < size; i++) {
+            TreeNode* node = que.front();
+            que.pop();
+            if (node->left != NULL) {que.push(node->left);}
+            if (node->right != NULL) {que.push(node->right);}
+            if (node->left == NULL && node->right == NULL) {
+                return depth;
+            }
+        }
+    }
+
+    return depth;
+}
+
+TreeNode* invertTree(TreeNode* root) {
+    if (root == NULL) return root;
+    invertTree(root->left);
+    invertTree(root->right);
+    TreeNode* temp = root->left;
+    root->left = root->right;
+    root->right = temp;
+
+    return root;
+}
+
+bool test101(TreeNode* left, TreeNode* right) {
+    if (left == NULL && right == NULL) return true;
+    if (left != NULL && right == NULL) return false;
+    if (left == NULL) return false;
+    if (left->val != right->val) return false;
+    test101(left->left, right->right);
+    test101(left->right, right->left);
+}
+
+bool isSymmetric(TreeNode* root) {
+    return test101(root->left, root->right);
+}
+
+vector<int> getConcatenation(vector<int>& nums) {
+    vector<int> result = vector<int>(nums.begin(), nums.end());
+    for (int i : nums) {
+        result.push_back(i);
+    }
+
+    return result;
+}
+
+vector<int> shuffle(vector<int>& nums, int n) {
+    vector<int> result;
+    for (int i = 0; i < n; i++) {
+        result.push_back(nums[i]);
+        result.push_back(nums[i + n]);
+    }
+
+    return result;
+}
+
+int findMaxConsecutiveOnes(vector<int>& nums) {
+    int max = INT_MIN;
+    int left = 0, right = 0;
+    for (; right < nums.size(); right++) {
+        max = std::max(max, right - left + 1);
+        if (nums[right] != 1) {
+            left = right + 1;
+        }
+    }
+
+    return max;
+}
+
+int countNodes(TreeNode* root) {
+    queue<TreeNode*> que;
+    int count = 0;
+    if (root == NULL) return 0;
+    que.push(root);
+    while (!que.empty()) {
+        int size = que.size();
+        for (int i = 0; i < size; i++) {
+            TreeNode* node = que.front();
+            que.pop();
+            if (node->left != NULL) {que.push(node->left);}
+            if (node->right != NULL) {que.push(node->right);}
+            count++;
+        }
+    }
+
+    return count;
+}
+
+int countNodes2(TreeNode* root) {
+    if (root == NULL) return 0;
+    return countNodes2(root->left) + countNodes2(root->right) + 1;
+}
+
 int main() {
     vector<int> a = {1, 1, 1, 1, 2, 2, 3};
     vector<int> result = topKFrequent(a, 2);
