@@ -3,6 +3,9 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include <ctime>
+#include <thread>
+#include <chrono>
 
 using namespace std;
 
@@ -1568,10 +1571,185 @@ int countNodes2(TreeNode* root) {
     return countNodes2(root->left) + countNodes2(root->right) + 1;
 }
 
-int main() {
-    vector<int> a = {1, 1, 1, 1, 2, 2, 3};
-    vector<int> result = topKFrequent(a, 2);
-    for (auto it : result) {
-        cout << it << endl;
+struct Books {
+    string title;
+    string author;
+    int book_id;
+
+    Books(string title, string author, int book_id)
+        : title(title), author(author), book_id(book_id) {}
+
+    Books();
+};
+
+void printBooks(const Books &books) {
+    cout << books.title << endl;
+    cout << books.author << endl;
+    cout << books.book_id << endl;
+}
+
+class Box {
+    double width;
+public:
+    friend void PrintWidth(Box box);
+    void setWidth(double width);
+
+    Box() = default;
+
+    Box(double x) : width(x) {};
+};
+
+void Box::setWidth(double wid) {
+    width = wid;
+}
+
+void PrintWidth(Box box) {
+    cout << box.width << endl;
+}
+
+int singleNumber(vector<int>& nums) {
+    int ret;
+    for (auto i : nums) {
+        ret ^= i;
     }
+
+    return ret;
+}
+
+vector<vector<int>> result;  // 存放符合条件结果的集合
+vector<int> path;  // 存放符合条件的单一结果
+void backtracking(int n, int k, int startIndex) {
+    if (path.size() == k) {
+        result.push_back(path);
+        return;
+    }
+    for (int i = startIndex; i < n; i++) {
+        path.push_back(i);
+        backtracking(n, k, i + 1);
+        path.pop_back();
+    }
+}
+
+const string stringVector[10] = {
+    "", //0
+    "",
+    "abc",
+    "def",
+    "ghi",
+    "jkl",
+    "mno",
+    "pqrs",
+    "tuv",
+    "wxyz"
+};
+
+vector<string> resultVector;
+string tmp = "";
+
+void backtrace(const string &digits, int index) {
+    if (index == digits.size()) {
+        resultVector.push_back(tmp);
+        return;
+    }
+    int digit = digits[index] - '0';
+    string letters = stringVector[digit];
+    for (int i = 0; i < letters.size(); i++) {
+        tmp += letters[i];
+        backtrace(digits, index + 1);
+        tmp.pop_back();
+    }
+}
+
+void backtrace(vector<int>& nums, int target, int startIndex) {
+    int sum = 0;
+    for (int i : path) {
+        sum += i;
+    }
+    if (sum >= target) {
+        if (sum == target) {
+            result.push_back(path);
+        }
+        return;
+    }
+    for (int i = startIndex; i < nums.size(); i++) {
+        path.push_back(nums[i]);
+        backtrace(nums, target, startIndex + 1);
+        path.pop_back();
+    }
+}
+
+bool isTest(string s, int start, int end) {
+    for (int i = start, j = end; i < j; i++, j--) {
+        if (s[i] != s[j]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+vector<vector<string>> result131;
+vector<string> path131;
+
+void backtrace131(const string& s, int start) {
+    if (start == s.size()) {
+        result131.push_back(path131);
+        return;
+    }
+    for (int i = start; i < s.size(); i++) {
+        if (isTest(s, start, i)) {
+            string str = s.substr(start, i - start + 1);
+            path131.push_back(str);
+        } else {
+            continue;
+        }
+        backtrace131(s, i + 1);
+        path131.pop_back();
+    }
+}
+
+vector<vector<int>> result93;
+vector<int> path93;
+void backtrack93(const string& s, int start, int num) {
+    if (num == 4) {
+        result93.push_back(path93);
+        return;
+    }
+    for (int i = start; i < s.size(); i++) {
+        result93.push_back(vector<int>());
+    }
+}
+
+int maxLevelSum(TreeNode* root) {
+    queue<TreeNode*> q;
+    q.push(root);
+    int maxLevel = 0;
+    int sum = 0;
+    int result = 0;
+    int maxNum = INT32_MIN;
+    while (!q.empty()) {
+        int size = q.size();
+        for (int i = 0; i < size; i++) {
+            TreeNode* node = q.front();
+            sum += node->val;
+            q.pop();
+            if (node->left != NULL) {q.push(node->left);}
+            if (node->right != NULL) {q.push(node->right);}
+        }
+        maxLevel++;
+        if (sum > maxNum) {
+            maxNum = sum;
+            result = maxLevel;
+        }
+        sum = 0;
+    }
+
+    return result;
+}
+
+int main() {
+    Box *box = new Box(10.0);
+    Box box1;
+    box1.setWidth(20.0);
+    PrintWidth(box1);
+    PrintWidth(*box);
 }
