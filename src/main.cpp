@@ -1746,10 +1746,135 @@ int maxLevelSum(TreeNode* root) {
     return result;
 }
 
+vector<vector<int>> result1;
+vector<int> path1;
+void backtrack1(vector<int>& nums, int start) {
+    result1.push_back(path1);
+    if (start >= nums.size()) {
+        return;
+    }
+    for (int i = start; i < nums.size(); i++) {
+        path1.push_back(nums[i]);
+        backtrack1(nums, i + 1);
+        path1.pop_back();
+    }
+}
+
+vector<vector<int>> result2;
+vector<int> path2;
+void backtrack2(vector<int>& nums, int start) {
+    result2.push_back(path2);
+    if (start >= nums.size()) {
+        return;
+    }
+    for (int i = start; i < nums.size(); i++) {
+        if (i > start && nums[i] == nums[i - 1]) {
+            continue;
+        }
+        path2.push_back(nums[i]);
+        backtrack2(nums, i + 1);
+        path2.pop_back();
+    }
+}
+
+int findContentChildren(vector<int>& g, vector<int>& s) {
+    sort(g.begin(), g.end());
+    sort(s.begin(), s.end());
+    int index = s.size() - 1;
+    int result = 0;
+    for (int i = g.size() - 1; i >= 0; i--) {
+        if (index >= 0 && s[index] >= g[i]) {
+            result++;
+            index--;
+        }
+    }
+    unordered_set<int> tmp;
+
+    return result;
+}
+
+class T {
+    public:
+    T() {
+        cout << "create a T obj" << endl;
+    }
+    T(const int num, const string& str) {
+        this->num = num;
+        this->str = str;
+    }
+    ~T() {
+        cout << "delete a T obj" << endl;
+    }
+
+    void setNum(const int num) {
+        this->num = num;
+    }
+
+    void setStr(const string& str) {
+        this->str = str;
+    }
+
+    int getNum() const {
+        return this->num;
+    }
+
+    string getStr() const {
+        return this->str;
+    }
+
+    private:
+    int num{};
+    string str;
+};
+
+int test1(const int a = 10, int = 20) {
+    return a;
+}
+
+constexpr double PI = 3.1415926;
+
+class Circle {
+public:
+    Circle() = default;
+    ~Circle() = default;
+    explicit Circle(const double radius) : r(radius){}
+
+    double getRadius() const {
+        return r;
+    }
+
+    void setRadius(const double radius) {
+        this->r = radius;
+    }
+
+    double getArea() const {
+        return PI * r * r;
+    }
+
+    double getPerimeter() const {
+        return 2 * PI * r;
+    }
+private:
+    double r{};
+};
+
+class Person {
+    public:
+    Person() {
+        cout << "create a Person obj" << endl;
+    }
+    ~Person() {
+        cout << "delete a Person obj" << endl;
+    }
+};
+
+void test2() {
+    Person p;
+}
+
 int main() {
-    Box *box = new Box(10.0);
-    Box box1;
-    box1.setWidth(20.0);
-    PrintWidth(box1);
-    PrintWidth(*box);
+    // test2();
+    const Person* p = new Person();
+    cout << "a" << endl;
+    delete p;
 }
