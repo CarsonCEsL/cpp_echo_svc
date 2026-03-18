@@ -195,6 +195,8 @@ vector<int> sortedSquares(vector<int>& nums) {
         }
         i--;
     }
+
+    return res;
 }
 
 int minSubArrayLen(int target, vector<int>& nums) {
@@ -1502,18 +1504,19 @@ TreeNode* invertTree(TreeNode* root) {
     return root;
 }
 
-bool test101(TreeNode* left, TreeNode* right) {
-    if (left == NULL && right == NULL) return true;
-    if (left != NULL && right == NULL) return false;
-    if (left == NULL) return false;
-    if (left->val != right->val) return false;
-    test101(left->left, right->right);
-    test101(left->right, right->left);
-}
+// bool test101(TreeNode* left, TreeNode* right) {
+//     if (left == NULL && right == NULL) return true;
+//     if (left != NULL && right == NULL) return false;
+//     if (left == NULL) return false;
+//     if (left->val != right->val) return false;
+//     test101(left->left, right->right);
+//     test101(left->right, right->left);
+//     return true;
+// }
 
-bool isSymmetric(TreeNode* root) {
-    return test101(root->left, root->right);
-}
+// bool isSymmetric(TreeNode* root) {
+//     return test101(root->left, root->right);
+// }
 
 vector<int> getConcatenation(vector<int>& nums) {
     vector<int> result = vector<int>(nums.begin(), nums.end());
@@ -1871,7 +1874,7 @@ class Person {
 void test2() {
     Person p;
 }
-//
-// int main() {
-//     cout << "a" << endl;
-// }
+
+int main() {
+    cout << "a" << endl;
+}

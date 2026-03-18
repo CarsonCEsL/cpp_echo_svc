@@ -7,6 +7,8 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include <cstring>
+#include <iostream>
 #include <arpa/inet.h>
 
 // 强制1字节对齐，防止编译器自动插入padding导致跨平台跨语言解析错误

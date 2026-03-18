@@ -461,8 +461,8 @@ vector<int> countBits(int n) {
     return ans;
 }
 
-// int main() {
-//     vector<string> test = {"flower", "flo", "flo"};
-//     // cout << "testcase" << endl;
-//     isPalindrome("A man, a plan, a canal: Panama");
-// }
+int main() {
+    vector<string> test = {"flower", "flo", "flo"};
+    // cout << "testcase" << endl;
+    isPalindrome("A man, a plan, a canal: Panama");
+}
