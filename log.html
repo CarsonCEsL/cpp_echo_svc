@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ 每日小任务 🐾</title>
+    <style>
+        :root {
+            --bg-color: #fffaf0;
+            --card-bg: #ffffff;
+            --primary: #ffb6c1;
+            --primary-hover: #ff9eab;
+            --text-main: #5c4d4d;
+            --text-muted: #a89f9f;
+            --border: #ffe4e1;
+            --success: #b5e7a0;
+            --danger: #ffb3ba;
+            --font-family: 'Quicksand', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-hover);
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* 输入区 */
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(255, 182, 193, 0.15);
+            border: 2px solid var(--border);
+        }
+
+        input[type="text"], select {
+            flex: 1;
+            padding: 0.8rem 1.2rem;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            font-size: 1rem;
+            color: var(--text-main);
+            background-color: #fffcfc;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 182, 193, 0.2);
+        }
+
+        /* 按钮 */
+        button {
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: var(--font-family);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 16px;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.4);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        /* 顶部控制区 */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag-btn {
+            background-color: var(--card-bg);
+            color: var(--text-muted);
+            border: 2px solid var(--border);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .tag-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* 标签分组容器 */
+        .tag-group {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 24px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            border: 2px dashed var(--border);
+        }
+
+        .tag-header {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #d87093;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tag-header::before {
+            content: '🏷️';
+        }
+
+        /* 列表容器 (现在是拖拽放置区) */
+        .task-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 20px; /* 确保空列表也能接收拖拽 */
+            border-radius: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .task-list.drag-over {
+            background-color: rgba(255, 182, 193, 0.15);
+        }
+
+        /* 空降区提示 */
+        .empty-drop-zone {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            border: 2px dashed #ffe4e1;
+        }
+
+        /* 任务卡片 */
+        .task-item {
+            background-color: var(--card-bg);
+            padding: 1.2rem;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+            border: 2px solid transparent;
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+            position: relative;
+        }
+
+        .task-item:hover {
+            box-shadow: 0 6px 16px rgba(255, 182, 193, 0.15);
+        }
+
+        /* 拖拽手柄 */
+        .drag-handle {
+            cursor: grab;
+            color: #eadddd;
+            font-size: 1.2rem;
+            margin-right: 12px;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .task-item:hover .drag-handle {
+            color: #ffb6c1;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        /* 正在拖拽时的样式 */
+        .task-item.dragging {
+            opacity: 0.4;
+            transform: scale(0.98);
+            border: 2px dashed var(--primary);
+            box-shadow: none;
+        }
+
+        /* 完成状态 */
+        .task-item.completed {
+            background-color: #faf9f9;
+            border: 2px dashed #eadddd;
+            box-shadow: none;
+        }
+
+        .task-item.completed .task-text {
+            color: var(--text-muted);
+        }
+
+        .task-content {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .task-text {
+            font-size: 1.05rem;
+            margin-left: 15px;
+        }
+
+        /* 自定义复选框 */
+        input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            min-width: 24px;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            margin: 0;
+            transition: all 0.2s;
+        }
+
+        input[type="checkbox"]:checked {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px; font-weight: bold;
+        }
+
+        /* 操作按钮 */
+        .actions { display: flex; gap: 8px; }
+        .actions button { padding: 0.4rem 0.8rem; border-radius: 12px; background: transparent; font-size: 0.85rem; }
+        .btn-archive { border: 2px solid var(--success); color: #8bbd78; }
+        .btn-archive:hover { background-color: var(--success); color: white; }
+        .btn-delete { border: 2px solid var(--danger); color: #e5989b; }
+        .btn-delete:hover { background-color: var(--danger); color: white; }
+
+        .section-title {
+            text-align: center; margin: 1rem 0; color: var(--text-muted); font-weight: bold;
+        }
+
+        #archiveSection .tag-group {
+            opacity: 0.9;
+        }
+
+        .pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+<h1>✨ 每日小任务 🐾</h1>
+
+<div class="input-group">
+    <input type="text" id="taskInput" placeholder="写下今天要完成的小目标吧..." onkeypress="if(event.key==='Enter') addTask()">
+    <select id="tagInput">
+        <option value="C++">C++</option>
+<!--        <option value="数据结构">数据结构</option>-->
+        <option value="算法">算法</option>
+        <option value="操作系统">操作系统</option>
+        <option value="网络">网络</option>
+        <option value="RPC项目">RPC项目</option>
+        <option value="其他">其他</option>
+    </select>
+    <button class="btn-primary" onclick="addTask()">添加记录 📝</button>
+</div>
+
+<div class="controls">
+    <div class="filter-tags" id="filterContainer">
+        <button class="tag-btn active" onclick="setFilter('全部')">全部</button>
+        <button class="tag-btn" onclick="setFilter('C++')">C++</button>
+<!--        <button class="tag-btn" onclick="setFilter('数据结构')">数据结构</button>-->
+        <button class="tag-btn" onclick="setFilter('算法')">算法</button>
+        <button class="tag-btn" onclick="setFilter('操作系统')">操作系统</button>
+        <button class="tag-btn" onclick="setFilter('网络')">网络</button>
+        <button class="tag-btn" onclick="setFilter('RPC项目')">RPC项目</button>
+    </div>
+    <button class="tag-btn" onclick="toggleArchiveView()" id="viewToggleBtn" style="border-color: #d3b8e8; color: #a985d1;">📦 查看归档箱</button>
+</div>
+
+<div id="activeSection"></div>
+
+<div id="archiveSection" style="display: none;">
+    <div class="section-title">🌟 历史成就展示柜 🌟</div>
+    <div id="archiveContainer"></div>
+</div>
+
+<script>
+    // 初始化数据与分类标签
+    let tasks = JSON.parse(localStorage.getItem('devTasks')) || [];
+    let currentFilter = '全部';
+    let showingArchived = false;
+    const ALL_TAGS = ['C++', '算法', '操作系统', '网络', 'RPC项目', '其他'];
+
+    function saveTasks() { localStorage.setItem('devTasks', JSON.stringify(tasks)); }
+
+    function addTask() {
+        const input = document.getElementById('taskInput');
+        const tag = document.getElementById('tagInput').value;
+        const text = input.value.trim();
+        if (!text) return alert('任务内容不能为空哦！');
+
+        tasks.push({
+            id: Date.now(), text: text, tag: tag,
+            completed: false, archived: false,
+            date: new Date().toLocaleDateString()
+        });
+        saveTasks();
+        input.value = '';
+        render();
+    }
+
+    function toggleComplete(id) {
+        const task = tasks.find(t => t.id === id);
+        if (task) { task.completed = !task.completed; saveTasks(); render(); }
+    }
+
+    function archiveTask(id) {
+        const task = tasks.find(t => t.id === id);
+        if (task) { task.archived = true; saveTasks(); render(); }
+    }
+
+    function deleteTask(id) {
+        if(confirm('真的要删除这个小任务吗？')) {
+            tasks = tasks.filter(t => t.id !== id); saveTasks(); render();
+        }
+    }
+
+    function setFilter(tag) {
+        currentFilter = tag;
+        document.querySelectorAll('.filter-tags .tag-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.innerText === tag);
+        });
+        render();
+    }
+
+    function toggleArchiveView() {
+        showingArchived = !showingArchived;
+        const btn = document.getElementById('viewToggleBtn');
+        const activeSec = document.getElementById('activeSection');
+        const archiveSec = document.getElementById('archiveSection');
+
+        if (showingArchived) {
+            btn.innerText = '✨ 返回当前任务'; btn.classList.add('active');
+            activeSec.style.display = 'none'; archiveSec.style.display = 'block';
+        } else {
+            btn.innerText = '📦 查看归档箱'; btn.classList.remove('active');
+            activeSec.style.display = 'block'; archiveSec.style.display = 'none';
+        }
+        render();
+    }
+
+    // --- 拖拽功能核心逻辑 ---
+    function handleDragStart(e) {
+        e.target.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragEnd(e) {
+        e.target.classList.remove('dragging');
+        document.querySelectorAll('.task-list').forEach(list => list.classList.remove('drag-over'));
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        const targetList = e.currentTarget;
+        targetList.classList.add('drag-over');
+
+        const draggingItem = document.querySelector('.dragging');
+        if (!draggingItem) return;
+
+        // 隐藏空降区提示文字
+        const emptyZone = targetList.querySelector('.empty-drop-zone');
+        if (emptyZone) emptyZone.style.display = 'none';
+
+        const siblings = [...targetList.querySelectorAll('.task-item:not(.dragging)')];
+        let nextSibling = siblings.find(sibling => {
+            const box = sibling.getBoundingClientRect();
+            return e.clientY <= box.top + box.height / 2;
+        });
+
+        if (nextSibling) targetList.insertBefore(draggingItem, nextSibling);
+        else targetList.appendChild(draggingItem);
+    }
+
+    function handleDragLeave(e) {
+        e.currentTarget.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('drag-over');
+        const draggingItem = document.querySelector('.dragging');
+        if (draggingItem) draggingItem.classList.remove('dragging');
+
+        // 根据 DOM 结构重新生成 active 任务数组 (实现排序和跨组改标签)
+        const renderedActiveTasks = [];
+        document.querySelectorAll('#activeSection .tag-group').forEach(group => {
+            const tag = group.dataset.tag;
+            group.querySelectorAll('.task-item').forEach(item => {
+                const id = parseInt(item.dataset.id);
+                const task = tasks.find(t => t.id === id);
+                if (task) {
+                    task.tag = tag; // 如果跨组拖拽，更新标签
+                    renderedActiveTasks.push(task);
+                }
+            });
+        });
+
+        // 合并回主数组 (保留隐藏或已归档的任务)
+        const unrenderedTasks = tasks.filter(t => !renderedActiveTasks.some(rt => rt.id === t.id));
+        tasks = [...renderedActiveTasks, ...unrenderedTasks];
+
+        saveTasks();
+        render(); // 刷新以恢复空降区等状态
+    }
+
+    // --- 分组渲染逻辑 ---
+    function renderGroup(containerId, isArchived) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+
+        ALL_TAGS.forEach(tag => {
+            // 处理顶部标签过滤
+            if (currentFilter !== '全部' && currentFilter !== tag) return;
+
+            const groupTasks = tasks.filter(t => t.archived === isArchived && t.tag === tag);
+
+            // 在"全部"视图下保留空降区，但过滤视图或归档箱中隐藏空标签
+            if (groupTasks.length === 0 && (isArchived || currentFilter !== '全部')) return;
+
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'tag-group';
+            groupDiv.dataset.tag = tag;
+
+            groupDiv.innerHTML = `
+                    <div class="tag-header">${tag}</div>
+                    <ul class="task-list"
+                        ${!isArchived ? 'ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"' : ''}>
+                        ${groupTasks.length === 0 ? '<div class="empty-drop-zone">拖拽任务到此处即可归入【'+tag+'】</div>' : ''}
+                    </ul>
+                `;
+
+            const ul = groupDiv.querySelector('.task-list');
+
+            groupTasks.forEach(task => {
+                const li = document.createElement('li');
+                li.className = `task-item ${task.completed ? 'completed' : ''} pop-in`;
+                if (!isArchived) {
+                    li.draggable = true;
+                    li.ondragstart = handleDragStart;
+                    li.ondragend = handleDragEnd;
+                }
+                li.dataset.id = task.id;
+
+                li.innerHTML = `
+                        <div class="task-content">
+                            ${!isArchived ? '<div class="drag-handle" title="按住拖拽排序">⋮⋮</div>' : ''}
+                            <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleComplete(${task.id})">
+                            <span class="task-text">${task.text}</span>
+                        </div>
+                        <div class="actions">
+                            ${!isArchived ? `<button class="btn-archive" onclick="archiveTask(${task.id})">归档</button>` : `<span style="color:#dcbaba; font-size:0.85rem; margin-right:8px;">${task.date}</span>`}
+                            <button class="btn-delete" onclick="deleteTask(${task.id})">删除</button>
+                        </div>
+                    `;
+                ul.appendChild(li);
+            });
+
+            container.appendChild(groupDiv);
+        });
+    }
+
+    function render() {
+        renderGroup('activeSection', false);
+        renderGroup('archiveContainer', true);
+    }
+
+    // 初始渲染
+    render();
+</script>
+</body>
+</html>

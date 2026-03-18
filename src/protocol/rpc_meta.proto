@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package myrpc;
+
+// 客户端发起请求时发送的内容
+message RpcRequest {
+    string service_name = 1; // 服务名，例如 "UserService"
+    string method_name = 2;  // 方法名，例如 "Login"
+    bytes args = 3;          // 方法的参数（也是经过 protobuf 序列化后的二进制数据）
+}
+
+// 服务端返回响应时发送的内容
+message RpcResponse {
+    int32 error_code = 1;    // 错误码，0 表示成功
+    string error_msg = 2;    // 错误信息
+    bytes result = 3;        // 方法的返回值（序列化后的二进制数据）
+}
