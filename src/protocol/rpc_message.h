@@ -95,7 +95,7 @@ public:
 
         // 拷贝body
         if (len >= sizeof(RpcHeader) + header.body_size) {
-            // buffer是其实，这段代码是跳过header长度，区body_size长度放进body，刚好是一个完整的RPC载荷
+            // buffer是其实，这段代码是跳过header长度，取body_size长度放进body，刚好是一个完整的RPC载荷
             body.assign(buffer + sizeof(RpcHeader), header.body_size);
             return true;
         }
